@@ -1,0 +1,44 @@
+#start template;
+template: stmts;
+stmts: { $$ = []; }
+| stmts stmt { $1.push($2); $$ = $1; }
+;
+stmt:
+	text
+|	html
+|	program
+;
+html:
+	tag_open stmts tag_close { if ($1.tagName != $3.tagName) throw Error("标签不匹配: " + lexer.getPos($3.index));
+		$$ = new HtmlTag($1.tagName, $1.attrs, $2);
+	}
+|	tag_empty attrs ">" { $$ = new EmptyTag($1.tagName, $2, $1.index); }
+;
+tag_open:
+	tag_start attrs ">" {
+		if (!$1.isEmpty && $3.lexeme == '/>')
+			throw Error("非空标签不允许 /> 关闭: " + lexer.getPos($3.index));
+		$$ = new TagOpen($1.tagName, $2, $1.index);
+	}
+;
+attrs: { $$ = []; }
+| attrs attr { $1.push($2); $$ = $1; }
+;
+attr:
+ attr_text
+| program
+;
+program:
+	stmt_if
+|	stmt_each
+|	stmt_expr
+;
+stmt_if:
+	if_begin stmts if_end { $$ = new If($1.expr, $2); }
+;
+stmt_each:
+	each_begin stmts each_end { $$ = new Each($1.expr, $2); }
+;
+stmt_expr:
+	tag_expr
+;

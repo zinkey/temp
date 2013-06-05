@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title></title>
+	<script src="../piscean.js"></script>
+	<script>
+		piscean.extend(this, piscean);
+
+	</script>
+	<script src="lexer_temp.js"></script>
+	<script src="parser_temp.js"></script>
+	<script src="parser_expr.js"></script>
+	<script>
+		function test() {
+			var s = document.getElementById('ta1').value;
+			var lx = Lexer(s);
+			if (0) {
+				try {
+					var r = parse(lx);
+				} catch (e) { }
+
+				document.getElementById('ta2').value = lx.tks().join('\n');
+			}
+			else {
+				var r = parse(lx);
+
+				document.getElementById('ta2').value = JSON.stringify(r);
+			}
+		}
+		//parseExpr('a+bc');
+	</script>
+</head>
+<body>
+	<textarea rows="20" cols="80" id="ta1"><div {{#if a+2+"}}"}}id=d{{/if}}></div>
+</textarea>
+	<input type="button" value="test" onclick="test()" />
+	<textarea rows="20" cols="80" id="ta2"></textarea>
+</body>
+</html>

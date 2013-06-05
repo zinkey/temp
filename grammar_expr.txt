@@ -1,0 +1,51 @@
+#start expr;
+/*
+ + - * / %   == >= ...
+ */
+expr:
+	equality
+;
+equality:
+	relation
+|	equality "==" relation { $$ = new Binary($1, $2, $3); }
+|	equality "!=" relation { $$ = new Binary($1, $2, $3); }
+;
+relation:
+	additive
+|	relation "<" additive { $$ = new Binary($1, $2, $3); }
+|	relation ">" additive { $$ = new Binary($1, $2, $3); }
+|	relation "<=" additive { $$ = new Binary($1, $2, $3); }
+|	relation ">=" additive { $$ = new Binary($1, $2, $3); }
+;
+additive:
+	multiplicative
+|	additive "+" multiplicative { $$ = new Binary($1, $2, $3); }
+|	additive "-" multiplicative { $$ = new Binary($1, $2, $3); }
+;
+multiplicative:
+	unary
+|	multiplicative "*" unary { $$ = new Binary($1, $2, $3); }
+|	multiplicative "/" unary { $$ = new Binary($1, $2, $3); }
+|	multiplicative "%" unary { $$ = new Binary($1, $2, $3); }
+;
+unary:
+	member
+|	"-" unary { $$ = new Unary($1, $2); }
+|	"!" unary { $$ = new Unary($1, $2); }
+;
+member:
+	primary
+|	member "[" expr "]" { $$ = new Binary($1, $2, $3); }
+|	member "." identifier { $$ = new Binary($1, $2, $3); }
+;
+primary:
+	loc
+|	string
+|	number
+|	boolean
+|	null
+;
+loc:
+	identifier
+|	"../" loc { $$ = new Parent($2); }
+;
